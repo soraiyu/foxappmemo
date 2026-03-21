@@ -28,7 +28,44 @@ A fully offline Android app for tracking, rating, and annotating your installed 
 
 ## Build from source
 
-### Requirements
+### Option A — GitHub Actions (recommended, no local setup needed)
+
+The repository includes a CI workflow (`.github/workflows/build.yml`) that builds
+a debug APK automatically on every push and pull request.
+
+#### 1. Enable GitHub Actions for this repository
+
+> Required **only once** by the repository owner.
+
+1. Open the repository on GitHub.
+2. Go to **Settings → Actions → General**.
+3. Under **Actions permissions**, select **Allow all actions and reusable workflows**.
+4. Under **Workflow permissions**, select **Read and write permissions**.
+5. Click **Save**.
+
+#### 2. Approve the first workflow run (if prompted)
+
+If you see a yellow banner saying _"This workflow requires approval"_:
+
+1. Click the **[Actions tab](../../actions)**.
+2. Find the run named **"Build APK"** with status _"Action required"_.
+3. Click **Review pending deployments** (or open the run and click **Approve and run**).
+
+#### 3. Download the APK
+
+Once the workflow finishes (green check-mark ✅):
+
+1. Click the **[Actions tab](../../actions)** and open the latest **"Build APK"** run.
+2. Scroll to the **Artifacts** section at the bottom.
+3. Click **app-debug** to download the ZIP — it contains `app-debug.apk`.
+
+You can also trigger a build at any time from **Actions → Build APK → Run workflow**.
+
+---
+
+### Option B — Build locally
+
+#### Requirements
 
 | Tool | Version |
 |------|---------|
@@ -38,7 +75,14 @@ A fully offline Android app for tracking, rating, and annotating your installed 
 ```bash
 git clone https://github.com/soraiyu/foxappmemo.git
 cd foxappmemo
-./gradlew :app:assembleRelease
+./gradlew assembleDebug
+# Output: app/build/outputs/apk/debug/app-debug.apk
+```
+
+Release build (unsigned):
+
+```bash
+./gradlew assembleRelease
 # Output: app/build/outputs/apk/release/app-release-unsigned.apk
 ```
 
