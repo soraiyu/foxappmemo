@@ -1,6 +1,7 @@
 package com.soraiyu.foxappmemo.ui.screen.main
 
-import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
@@ -75,16 +75,41 @@ fun MainScreen(
 
     var pendingDeletePackage by remember { mutableStateOf<String?>(null) }
 
-    // Handle export
-    LaunchedEffect(uiState.exportJson) {
-        val json = uiState.exportJson ?: return@LaunchedEffect
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            type = "application/json"
-            putExtra(Intent.EXTRA_TEXT, json)
-            putExtra(Intent.EXTRA_SUBJECT, "FoxAppMemo export")
+    // Holds the JSON string captured at the moment the SAF file picker is opened.
+    // Cleared after the picker returns (whether the user saved or cancelled).
+    var capturedExportJson by remember { mutableStateOf<String?>(null) }
+
+    // SAF launcher: opens the system file picker so the user can choose where to
+    // save the JSON export. The callback receives the URI chosen by the user, or
+    // null if the picker was dismissed.
+    val createDocumentLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri ->
+        val json = capturedExportJson
+        capturedExportJson = null
+        if (uri != null && json != null) {
+            try {
+                context.contentResolver.openOutputStream(uri)?.use { stream ->
+                    stream.write(json.toByteArray(Charsets.UTF_8))
+                }
+                scope.launch { snackbarHostState.showSnackbar("Export saved") }
+            } catch (e: Exception) {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Export failed: ${e.message}")
+                }
+            }
         }
-        context.startActivity(Intent.createChooser(intent, "Export JSON"))
+        // Always clear the pending JSON so a subsequent export attempt works.
         viewModel.clearExportJson()
+    }
+
+    // When the ViewModel has prepared the JSON, capture it and open the SAF file picker.
+    LaunchedEffect(uiState.exportJson) {
+        val json = uiState.exportJson
+        if (json != null) {
+            capturedExportJson = json
+            createDocumentLauncher.launch("foxappmemo-export.json")
+        }
     }
 
     // Delete confirmation dialog
