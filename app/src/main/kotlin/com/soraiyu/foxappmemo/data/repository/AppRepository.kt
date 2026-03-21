@@ -15,16 +15,51 @@ class AppRepository @Inject constructor(
     private val appDao: AppDao,
     private val tagDao: TagDao,
 ) {
+    // ── Read ─────────────────────────────────────────────────────────────────
+
+    /** All apps with tags, ordered by installDate DESC. */
     fun getAllAppsWithTags(): Flow<List<AppWithTags>> = appDao.getAllAppsWithTags()
 
+    /** All tags alphabetically. */
     fun getAllTags(): Flow<List<TagEntity>> = tagDao.getAllTags()
 
     suspend fun getAppWithTags(packageName: String): AppWithTags? =
         appDao.getAppWithTags(packageName)
 
+    // ── Filtered queries ─────────────────────────────────────────────────────
+
+    /** Apps whose [AppEntity.status] matches [status]. */
+    fun getAppsByStatus(status: String): Flow<List<AppWithTags>> =
+        appDao.getAppsByStatus(status)
+
+    /** Apps that have tag [tagId] attached. */
+    fun getAppsByTag(tagId: Long): Flow<List<AppWithTags>> =
+        appDao.getAppsByTag(tagId)
+
+    /** Apps whose [AppEntity.rating] is ≥ [minRating]. */
+    fun getAppsByMinRating(minRating: Int): Flow<List<AppWithTags>> =
+        appDao.getAppsByMinRating(minRating)
+
+    /**
+     * Full-text search across appName and packageName (case-insensitive LIKE).
+     * The [query] string is wrapped with `%` wildcards automatically.
+     * LIKE special characters (`%`, `_`, `\`) in [query] are escaped so that
+     * they are treated as literals, not SQL wildcards.
+     */
+    fun searchApps(query: String): Flow<List<AppWithTags>> {
+        // Escape LIKE special characters before wrapping with wildcards.
+        val escaped = query.trim()
+            .replace("\\", "\\\\")
+            .replace("%", "\\%")
+            .replace("_", "\\_")
+        return appDao.searchApps("%$escaped%")
+    }
+
+    // ── Write ─────────────────────────────────────────────────────────────────
+
     suspend fun saveApp(app: AppEntity, tagNames: List<String>) {
         appDao.insertApp(app)
-        // Update tags for this app
+        // Replace all cross-refs for this app
         appDao.deleteCrossRefsForApp(app.packageName)
         tagNames.forEach { name ->
             val trimmed = name.trim()
