@@ -1,5 +1,8 @@
 package com.soraiyu.foxappmemo.ui.screen.addedit
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +10,7 @@ import com.soraiyu.foxappmemo.data.entity.AppEntity
 import com.soraiyu.foxappmemo.data.entity.AppStatus
 import com.soraiyu.foxappmemo.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,10 +39,21 @@ data class AddEditUiState(
 @HiltViewModel
 class AddEditViewModel @Inject constructor(
     private val repository: AppRepository,
+    @ApplicationContext private val appContext: Context,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val editPackageName: String? = savedStateHandle["packageName"]
+
+    /**
+     * App name pre-filled from a navigation argument (key `"appName"`).
+     *
+     * Set when navigating from [InstalledAppsScreen] to this screen for an app
+     * that has not yet been recorded in the database. It is used as the initial
+     * value for [AddEditUiState.appName] when no existing record is found.
+     * Falls back to [resolveAppLabel] and then to the raw package name.
+     */
+    private val prefilledAppName: String? = savedStateHandle["appName"]
 
     private val _uiState = MutableStateFlow(AddEditUiState())
     val uiState: StateFlow<AddEditUiState> = _uiState.asStateFlow()
@@ -71,8 +86,37 @@ class AddEditViewModel @Inject constructor(
                     )
                 }
             } else {
-                _uiState.update { it.copy(isLoading = false) }
+                // Not in DB yet — prefill from nav arg or PackageManager
+                val resolvedName = prefilledAppName
+                    ?: resolveAppLabel(packageName)
+                    ?: packageName
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        packageName = packageName,
+                        appName = resolvedName,
+                    )
+                }
             }
+        }
+    }
+
+    /**
+     * Resolves the human-readable app label for [packageName] using PackageManager.
+     * Returns `null` when the package is not installed on this device.
+     */
+    private fun resolveAppLabel(packageName: String): String? {
+        return try {
+            val pm = appContext.packageManager
+            @Suppress("DEPRECATION")
+            val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+            } else {
+                pm.getApplicationInfo(packageName, 0)
+            }
+            pm.getApplicationLabel(info).toString()
+        } catch (_: PackageManager.NameNotFoundException) {
+            null
         }
     }
 
@@ -99,17 +143,26 @@ class AddEditViewModel @Inject constructor(
         _uiState.update { it.copy(tags = it.tags - name) }
     }
 
-    /** Pre-fill fields from a Play Store share URL text */
+    /**
+     * Pre-fill fields from a Play Store / Aurora Store share URL.
+     *
+     * Expected URL format (Play Store):
+     * `https://play.google.com/store/apps/details?id=<packageName>`
+     *
+     * After extracting the package name the app label is resolved via
+     * PackageManager so the [appName] field is pre-populated when the app
+     * is installed on this device.
+     */
     fun applySharedText(text: String) {
-        // Play Store URLs: https://play.google.com/store/apps/details?id=<packageName>
         val regex = Regex("""id=([A-Za-z][A-Za-z0-9_]*(\.([A-Za-z][A-Za-z0-9_]*))*)""")
         val match = regex.find(text)
         if (match != null) {
             val pkg = match.groupValues[1]
+            val resolved = resolveAppLabel(pkg)
             _uiState.update {
                 it.copy(
                     packageName = pkg,
-                    appName = if (it.appName.isBlank()) pkg else it.appName,
+                    appName = if (it.appName.isBlank()) (resolved ?: pkg) else it.appName,
                 )
             }
         }

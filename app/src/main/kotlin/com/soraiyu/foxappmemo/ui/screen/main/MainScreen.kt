@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.IosShare
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
@@ -63,6 +64,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     onNavigateToAddEdit: (packageName: String?) -> Unit,
+    onNavigateToInstalledApps: () -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -124,6 +126,9 @@ fun MainScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 ),
                 actions = {
+                    IconButton(onClick = onNavigateToInstalledApps) {
+                        Icon(Icons.Default.PhoneAndroid, contentDescription = "Installed Apps")
+                    }
                     IconButton(onClick = {
                         scope.launch { scaffoldState.bottomSheetState.expand() }
                     }) {
