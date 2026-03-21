@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Fox head - orange body -->
+    <path
+        android:fillColor="#E8631A"
+        android:pathData="M54,20 C35,20 22,35 22,52 C22,68 33,80 54,82 C75,80 86,68 86,52 C86,35 73,20 54,20 Z" />
+    <!-- Fox ears - left -->
+    <path
+        android:fillColor="#E8631A"
+        android:pathData="M30,30 L22,14 L42,24 Z" />
+    <!-- Fox ears - right -->
+    <path
+        android:fillColor="#E8631A"
+        android:pathData="M78,30 L86,14 L66,24 Z" />
+    <!-- Inner ear - left (pink) -->
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M32,28 L26,17 L40,24 Z" />
+    <!-- Inner ear - right (pink) -->
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M76,28 L82,17 L68,24 Z" />
+    <!-- White face area -->
+    <path
+        android:fillColor="#FFF8F0"
+        android:pathData="M54,40 C44,40 36,48 36,60 C36,70 44,78 54,78 C64,78 72,70 72,60 C72,48 64,40 54,40 Z" />
+    <!-- Eyes - left -->
+    <circle
+        android:fillColor="#321911"
+        android:cx="44"
+        android:cy="55"
+        android:r="4" />
+    <!-- Eyes - right -->
+    <circle
+        android:fillColor="#321911"
+        android:cx="64"
+        android:cy="55"
+        android:r="4" />
+    <!-- Eye shine - left -->
+    <circle
+        android:fillColor="#FFFFFF"
+        android:cx="46"
+        android:cy="53"
+        android:r="1.5" />
+    <!-- Eye shine - right -->
+    <circle
+        android:fillColor="#FFFFFF"
+        android:cx="66"
+        android:cy="53"
+        android:r="1.5" />
+    <!-- Nose -->
+    <path
+        android:fillColor="#5D4037"
+        android:pathData="M51,64 L54,60 L57,64 L54,67 Z" />
+    <!-- Tail hint at bottom -->
+    <path
+        android:fillColor="#FFB300"
+        android:pathData="M54,85 C48,85 38,90 36,96 L72,96 C70,90 60,85 54,85 Z" />
+    <!-- White tail tip -->
+    <path
+        android:fillColor="#FFF8F0"
+        android:pathData="M54,92 C50,92 46,94 44,96 L64,96 C62,94 58,92 54,92 Z" />
+</vector>
