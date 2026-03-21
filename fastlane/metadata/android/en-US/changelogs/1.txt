@@ -1,0 +1,6 @@
+Initial release.
+
+• Track any installed (or manually entered) app with notes, ratings, status labels, and tags
+• Filter and search your app list
+• Export data as JSON via the Storage Access Framework
+• No internet permission – fully offline

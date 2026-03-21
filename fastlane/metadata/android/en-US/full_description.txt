@@ -1,0 +1,17 @@
+FoxAppMemo is a fully offline app manager and memo tool. Browse your installed apps or enter any package name manually, then keep personal notes alongside a 1–5 star rating, a status label, and free-form tags.
+
+Features:
+• Browse installed apps directly from the app and add them to your list in one tap
+• Rich memos – attach a free-text note to any app
+• Star ratings (1–5) with a clear visual rating bar
+• Status labels – Trying / Main / Avoid / Blacklist / Reconsider
+• Tag system – create tags on the fly and filter by multiple tags at once
+• Powerful filters – search by name or package, filter by status, tags, and minimum rating
+• Export your full memo list as a pretty-printed JSON file via the Storage Access Framework (you choose the save location)
+• Swipe-to-delete with confirmation dialog
+• Material You / Material 3 design with a warm fox-inspired colour palette
+
+Privacy:
+• No internet permission – the app never makes any network requests
+• All data is stored locally in a Room (SQLite) database on your device
+• The only permissions used are QUERY_ALL_PACKAGES (to list installed apps) and the implicit storage access granted by the system file-picker when you choose to export
