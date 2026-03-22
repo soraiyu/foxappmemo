@@ -5,6 +5,8 @@
     <string name="edit_app">Edit App</string>
     <string name="search_apps">Search apps…</string>
     <string name="no_apps">No apps recorded yet.\nTap + to add one!</string>
+    <string name="no_apps_match_filters">No apps match your filters</string>
+    <string name="clear_search">Clear search</string>
     <string name="status_trying">trying</string>
     <string name="status_main">main</string>
     <string name="status_avoid">avoid</string>

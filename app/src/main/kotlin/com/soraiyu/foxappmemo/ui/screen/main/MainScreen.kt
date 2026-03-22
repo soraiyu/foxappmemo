@@ -180,12 +180,20 @@ fun MainScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Search apps…") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                placeholder = { Text(stringResource(R.string.search_apps)) },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(R.string.search_apps),
+                    )
+                },
                 trailingIcon = {
                     if (uiState.filter.query.isNotEmpty()) {
                         IconButton(onClick = { viewModel.setQuery("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(R.string.clear_search),
+                            )
                         }
                     }
                 },
@@ -203,9 +211,9 @@ fun MainScreen(
                             uiState.filter.selectedTagIds.isNotEmpty() ||
                             uiState.filter.selectedRatings.isNotEmpty()
                         ) {
-                            "No apps match your filters"
+                            stringResource(R.string.no_apps_match_filters)
                         } else {
-                            "No apps recorded yet.\nTap + to add one!"
+                            stringResource(R.string.no_apps)
                         },
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
