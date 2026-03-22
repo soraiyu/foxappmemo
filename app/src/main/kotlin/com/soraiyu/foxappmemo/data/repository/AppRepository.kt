@@ -1,6 +1,8 @@
 package com.soraiyu.foxappmemo.data.repository
 
+import androidx.room.withTransaction
 import com.soraiyu.foxappmemo.data.db.AppDao
+import com.soraiyu.foxappmemo.data.db.AppDatabase
 import com.soraiyu.foxappmemo.data.db.TagDao
 import com.soraiyu.foxappmemo.data.entity.AppEntity
 import com.soraiyu.foxappmemo.data.entity.AppTagCrossRef
@@ -12,6 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class AppRepository @Inject constructor(
+    private val db: AppDatabase,
     private val appDao: AppDao,
     private val tagDao: TagDao,
 ) {
@@ -42,36 +45,36 @@ class AppRepository @Inject constructor(
 
     /**
      * Full-text search across appName and packageName (case-insensitive LIKE).
-     * The [query] string is wrapped with `%` wildcards automatically.
-     * LIKE special characters (`%`, `_`, `\`) in [query] are escaped so that
-     * they are treated as literals, not SQL wildcards.
+     * The [query] string is trimmed and wrapped with `%` wildcards automatically.
+     * Note: `%` and `_` in [query] are treated as SQL LIKE wildcards.
      */
     fun searchApps(query: String): Flow<List<AppWithTags>> {
-        // Escape LIKE special characters before wrapping with wildcards.
-        val escaped = query.trim()
-            .replace("\\", "\\\\")
-            .replace("%", "\\%")
-            .replace("_", "\\_")
-        return appDao.searchApps("%$escaped%")
+        val trimmed = query.trim()
+        return appDao.searchApps("%$trimmed%")
     }
 
     // ── Write ─────────────────────────────────────────────────────────────────
 
     suspend fun saveApp(app: AppEntity, tagNames: List<String>) {
-        appDao.insertApp(app)
-        // Replace all cross-refs for this app
-        appDao.deleteCrossRefsForApp(app.packageName)
-        tagNames.forEach { name ->
-            val trimmed = name.trim()
-            if (trimmed.isNotEmpty()) {
-                val existingTag = tagDao.getTagByName(trimmed)
-                val tagId = existingTag?.id ?: tagDao.insertTag(TagEntity(name = trimmed))
-                if (tagId > 0) {
+        db.withTransaction {
+            appDao.insertApp(app)
+            // Replace all cross-refs for this app
+            appDao.deleteCrossRefsForApp(app.packageName)
+            tagNames.forEach { name ->
+                val trimmed = name.trim()
+                if (trimmed.isNotEmpty()) {
+                    // Use getOrCreate to safely handle concurrent inserts:
+                    // insertTag with IGNORE returns -1 on conflict, so we
+                    // re-query to get the actual id.
+                    val tagId = tagDao.insertTag(TagEntity(name = trimmed))
+                        .takeIf { it > 0 }
+                        ?: tagDao.getTagByName(trimmed)?.id
+                        ?: return@forEach
                     appDao.insertCrossRef(AppTagCrossRef(app.packageName, tagId))
                 }
             }
+            tagDao.deleteUnusedTags()
         }
-        tagDao.deleteUnusedTags()
     }
 
     suspend fun deleteApp(packageName: String) {

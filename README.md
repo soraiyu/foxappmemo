@@ -8,10 +8,10 @@ A fully offline Android app for tracking, rating, and annotating your installed 
 
 - **Browse installed apps** – pick any app from the on-device list and add it to your memo list with one tap
 - **Rich memos** – attach a free-text note to any app
-- **Star ratings** – 1–5 stars with an interactive rating bar
+- **Simple ratings** – three-level rating: 自分向きじゃない / ふつう / 好き
 - **Status labels** – _Trying / Main / Avoid / Blacklist / Reconsider_
-- **Tags** – create tags on the fly and filter by multiple tags at once
-- **Powerful filters** – search by name or package name, filter by status, tags, and minimum rating
+- **Tags** – create tags on the fly and filter by multiple tags at once; app genre is auto-detected from the OS and pre-filled as a tag
+- **Powerful filters** – search by name or package name, filter by status, tags, and specific rating values via chips
 - **JSON export** – save your full memo list as a pretty-printed JSON file using the Storage Access Framework (you choose the destination)
 - **Swipe to delete** with confirmation
 - **Material You / Material 3** design with a warm fox-inspired colour palette

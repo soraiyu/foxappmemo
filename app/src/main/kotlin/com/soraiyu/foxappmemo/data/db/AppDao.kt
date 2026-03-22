@@ -76,8 +76,7 @@ interface AppDao {
     /**
      * Full-text search across [appName] and [packageName].
      * [query] must already be a valid LIKE pattern (e.g. `%foo%`);
-     * use [com.soraiyu.foxappmemo.data.repository.AppRepository.searchApps]
-     * to pass plain text with automatic escaping.
+     * `%` and `_` in the wrapped query are treated as SQL LIKE wildcards.
      */
     @Transaction
     @Query(

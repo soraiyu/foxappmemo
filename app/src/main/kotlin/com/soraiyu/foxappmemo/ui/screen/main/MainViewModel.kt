@@ -7,6 +7,7 @@ import com.soraiyu.foxappmemo.data.entity.AppWithTags
 import com.soraiyu.foxappmemo.data.entity.TagEntity
 import com.soraiyu.foxappmemo.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -109,8 +111,10 @@ class MainViewModel @Inject constructor(
     fun exportToJson() {
         viewModelScope.launch {
             val apps = repository.getAllAppsWithTags().first()
-            val json = Json { prettyPrint = true }
-            _exportJson.value = json.encodeToString(apps)
+            val jsonStr = withContext(Dispatchers.Default) {
+                Json { prettyPrint = true }.encodeToString(apps)
+            }
+            _exportJson.value = jsonStr
         }
     }
 

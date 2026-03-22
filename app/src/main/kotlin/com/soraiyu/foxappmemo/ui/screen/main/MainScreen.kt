@@ -59,6 +59,7 @@ import com.soraiyu.foxappmemo.data.entity.AppRating
 import com.soraiyu.foxappmemo.data.entity.AppStatus
 import com.soraiyu.foxappmemo.data.entity.AppWithTags
 import com.soraiyu.foxappmemo.ui.component.AppListItem
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -89,13 +90,13 @@ fun MainScreen(
         val json = capturedExportJson
         capturedExportJson = null
         if (uri != null && json != null) {
-            try {
-                context.contentResolver.openOutputStream(uri)?.use { stream ->
-                    stream.write(json.toByteArray(Charsets.UTF_8))
-                }
-                scope.launch { snackbarHostState.showSnackbar("Export saved") }
-            } catch (e: Exception) {
-                scope.launch {
+            scope.launch(Dispatchers.IO) {
+                try {
+                    context.contentResolver.openOutputStream(uri)?.use { stream ->
+                        stream.write(json.toByteArray(Charsets.UTF_8))
+                    }
+                    snackbarHostState.showSnackbar("Export saved")
+                } catch (e: Exception) {
                     snackbarHostState.showSnackbar("Export failed: ${e.message}")
                 }
             }
@@ -199,7 +200,8 @@ fun MainScreen(
                     Text(
                         text = if (uiState.filter.query.isNotEmpty() ||
                             uiState.filter.selectedStatuses.isNotEmpty() ||
-                            uiState.filter.selectedTagIds.isNotEmpty()
+                            uiState.filter.selectedTagIds.isNotEmpty() ||
+                            uiState.filter.selectedRatings.isNotEmpty()
                         ) {
                             "No apps match your filters"
                         } else {

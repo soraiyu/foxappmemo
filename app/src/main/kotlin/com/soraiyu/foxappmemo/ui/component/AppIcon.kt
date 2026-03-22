@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
@@ -39,12 +40,14 @@ fun AppIcon(
     size: Dp = 40.dp,
 ) {
     val context = LocalContext.current
-    val icon: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, packageName) {
+    val density = LocalDensity.current
+    val sizePx = with(density) { size.roundToPx() }
+    val icon: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, packageName, sizePx) {
         value = withContext(Dispatchers.IO) {
             try {
                 context.packageManager
                     .getApplicationIcon(packageName)
-                    .toBitmap()
+                    .toBitmap(width = sizePx, height = sizePx)
                     .asImageBitmap()
             } catch (_: Exception) {
                 null
