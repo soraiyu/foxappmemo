@@ -1,6 +1,7 @@
 package com.soraiyu.foxappmemo.ui.screen.addedit
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.lifecycle.SavedStateHandle
@@ -90,11 +91,13 @@ class AddEditViewModel @Inject constructor(
                 val resolvedName = prefilledAppName
                     ?: resolveAppLabel(packageName)
                     ?: packageName
+                val category = resolveAppCategory(packageName)
                 _uiState.update {
                     it.copy(
                         isLoading = false,
                         packageName = packageName,
                         appName = resolvedName,
+                        tags = if (category != null) listOf(category) else emptyList(),
                     )
                 }
             }
@@ -115,6 +118,36 @@ class AddEditViewModel @Inject constructor(
                 pm.getApplicationInfo(packageName, 0)
             }
             pm.getApplicationLabel(info).toString()
+        } catch (_: PackageManager.NameNotFoundException) {
+            null
+        }
+    }
+
+    /**
+     * Resolves the category label for [packageName] using [ApplicationInfo.category].
+     * Returns a Japanese category string, or `null` for undefined/unknown categories.
+     */
+    private fun resolveAppCategory(packageName: String): String? {
+        return try {
+            val pm = appContext.packageManager
+            @Suppress("DEPRECATION")
+            val info = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+            } else {
+                pm.getApplicationInfo(packageName, 0)
+            }
+            when (info.category) {
+                ApplicationInfo.CATEGORY_GAME -> "ゲーム"
+                ApplicationInfo.CATEGORY_AUDIO -> "音楽・音声"
+                ApplicationInfo.CATEGORY_VIDEO -> "動画・映像"
+                ApplicationInfo.CATEGORY_IMAGE -> "写真・画像"
+                ApplicationInfo.CATEGORY_SOCIAL -> "SNS"
+                ApplicationInfo.CATEGORY_NEWS -> "ニュース"
+                ApplicationInfo.CATEGORY_MAPS -> "地図・ナビ"
+                ApplicationInfo.CATEGORY_PRODUCTIVITY -> "仕事・生産性"
+                ApplicationInfo.CATEGORY_ACCESSIBILITY -> "アクセシビリティ"
+                else -> null
+            }
         } catch (_: PackageManager.NameNotFoundException) {
             null
         }

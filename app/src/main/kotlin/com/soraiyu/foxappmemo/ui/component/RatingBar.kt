@@ -1,49 +1,52 @@
 package com.soraiyu.foxappmemo.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.soraiyu.foxappmemo.data.entity.AppRating
 
+/** Interactive 3-option rating selector. Tapping the selected option clears the rating. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun RatingBar(
+fun RatingSelector(
     rating: Int?,
-    onRatingChange: ((Int) -> Unit)? = null,
+    onRatingChange: (Int?) -> Unit,
     modifier: Modifier = Modifier,
-    starColor: Color = Color(0xFFFFB300),
-    maxRating: Int = 5,
 ) {
-    Row(
+    FlowRow(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        for (i in 1..maxRating) {
-            val filled = rating != null && i <= rating
-            if (onRatingChange != null) {
-                IconButton(onClick = { onRatingChange(i) }) {
-                    Icon(
-                        imageVector = if (filled) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                        contentDescription = "Rate $i",
-                        tint = if (filled) starColor else MaterialTheme.colorScheme.outline,
-                    )
-                }
-            } else {
-                Icon(
-                    imageVector = if (filled) Icons.Filled.Star else Icons.Outlined.StarOutline,
-                    contentDescription = null,
-                    tint = if (filled) starColor else MaterialTheme.colorScheme.outline,
-                )
-            }
+        AppRating.entries.forEach { appRating ->
+            val isSelected = rating == appRating.value
+            FilterChip(
+                selected = isSelected,
+                onClick = { onRatingChange(if (isSelected) null else appRating.value) },
+                label = { Text(appRating.label) },
+            )
         }
+    }
+}
+
+/** Display-only rating label showing the current rating, or nothing when unrated. */
+@Composable
+fun RatingLabel(
+    rating: Int?,
+    modifier: Modifier = Modifier,
+) {
+    val appRating = AppRating.fromValue(rating)
+    if (appRating != null) {
+        Text(
+            text = appRating.label,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = modifier,
+        )
     }
 }

@@ -55,6 +55,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.soraiyu.foxappmemo.R
+import com.soraiyu.foxappmemo.data.entity.AppRating
 import com.soraiyu.foxappmemo.data.entity.AppStatus
 import com.soraiyu.foxappmemo.data.entity.AppWithTags
 import com.soraiyu.foxappmemo.ui.component.AppListItem
@@ -139,7 +140,7 @@ fun MainScreen(
                 uiState = uiState,
                 onToggleStatus = viewModel::toggleStatus,
                 onToggleTag = viewModel::toggleTag,
-                onSetMinRating = viewModel::setMinRating,
+                onToggleRating = viewModel::toggleRating,
                 onClearFilters = viewModel::clearFilters,
             )
         },
@@ -290,7 +291,7 @@ private fun FilterPanel(
     uiState: MainUiState,
     onToggleStatus: (AppStatus) -> Unit,
     onToggleTag: (Long) -> Unit,
-    onSetMinRating: (Int?) -> Unit,
+    onToggleRating: (Int) -> Unit,
     onClearFilters: () -> Unit,
 ) {
     Column(
@@ -323,18 +324,13 @@ private fun FilterPanel(
             }
         }
 
-        Text("Min Rating", style = MaterialTheme.typography.titleSmall)
+        Text("評価", style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = uiState.filter.minRating == null,
-                onClick = { onSetMinRating(null) },
-                label = { Text("Any") },
-            )
-            (1..5).forEach { r ->
+            AppRating.entries.forEach { r ->
                 FilterChip(
-                    selected = uiState.filter.minRating == r,
-                    onClick = { onSetMinRating(r) },
-                    label = { Text("$r★+") },
+                    selected = r.value in uiState.filter.selectedRatings,
+                    onClick = { onToggleRating(r.value) },
+                    label = { Text(r.label) },
                 )
             }
         }

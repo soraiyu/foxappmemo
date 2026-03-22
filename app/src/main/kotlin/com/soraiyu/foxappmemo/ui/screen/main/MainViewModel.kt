@@ -22,7 +22,7 @@ data class FilterState(
     val query: String = "",
     val selectedStatuses: Set<AppStatus> = emptySet(),
     val selectedTagIds: Set<Long> = emptySet(),
-    val minRating: Int? = null,
+    val selectedRatings: Set<Int> = emptySet(),
 )
 
 data class MainUiState(
@@ -55,8 +55,8 @@ class MainViewModel @Inject constructor(
                 filter.selectedStatuses.any { it.label == app.status }
             val matchesTags = filter.selectedTagIds.isEmpty() ||
                 appWithTags.tags.any { it.id in filter.selectedTagIds }
-            val matchesRating = filter.minRating == null ||
-                (app.rating != null && app.rating >= filter.minRating)
+            val matchesRating = filter.selectedRatings.isEmpty() ||
+                app.rating in filter.selectedRatings
             matchesQuery && matchesStatus && matchesTags && matchesRating
         }
         MainUiState(
@@ -89,8 +89,11 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    fun setMinRating(rating: Int?) {
-        _filter.value = _filter.value.copy(minRating = rating)
+    fun toggleRating(rating: Int) {
+        val current = _filter.value.selectedRatings
+        _filter.value = _filter.value.copy(
+            selectedRatings = if (rating in current) current - rating else current + rating,
+        )
     }
 
     fun clearFilters() {

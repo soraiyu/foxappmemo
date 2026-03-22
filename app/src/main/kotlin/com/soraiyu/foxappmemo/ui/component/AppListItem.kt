@@ -73,15 +73,7 @@ fun AppListItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    RatingBar(
-                        rating = appWithTags.app.rating,
-                    )
-                }
+                RatingLabel(rating = appWithTags.app.rating)
                 if (appWithTags.tags.isNotEmpty()) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),

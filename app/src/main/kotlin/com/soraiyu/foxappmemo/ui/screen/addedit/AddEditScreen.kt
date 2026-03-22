@@ -46,7 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.soraiyu.foxappmemo.data.entity.AppStatus
-import com.soraiyu.foxappmemo.ui.component.RatingBar
+import com.soraiyu.foxappmemo.ui.component.RatingSelector
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -150,21 +150,11 @@ fun AddEditScreen(
 
             // Rating
             Column {
-                Text("Rating", style = MaterialTheme.typography.labelMedium)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RatingBar(
-                        rating = uiState.rating,
-                        onRatingChange = { r ->
-                            // Tapping same star clears rating
-                            viewModel.setRating(if (uiState.rating == r) null else r)
-                        },
-                    )
-                    if (uiState.rating != null) {
-                        IconButton(onClick = { viewModel.setRating(null) }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear rating")
-                        }
-                    }
-                }
+                Text("評価", style = MaterialTheme.typography.labelMedium)
+                RatingSelector(
+                    rating = uiState.rating,
+                    onRatingChange = viewModel::setRating,
+                )
             }
 
             // Tags
