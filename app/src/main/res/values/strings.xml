@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FoxAppMemo</string>
+    <string name="add_app">Add App</string>
+    <string name="edit_app">Edit App</string>
+    <string name="search_apps">Search apps…</string>
+    <string name="no_apps">No apps recorded yet.\nTap + to add one!</string>
+    <string name="no_apps_match_filters">No apps match your filters</string>
+    <string name="clear_search">Clear search</string>
+    <string name="status_trying">trying</string>
+    <string name="status_main">main</string>
+    <string name="status_avoid">avoid</string>
+    <string name="status_blacklist">blacklist</string>
+    <string name="status_reconsider">reconsider</string>
+    <string name="export_json">Export JSON</string>
+    <string name="filter">Filter</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="back">Back</string>
+</resources>
