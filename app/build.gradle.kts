@@ -74,6 +74,9 @@ dependencies {
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
 
+    // Material Components (provides Theme.Material3.DayNight.NoActionBar for XML themes)
+    implementation(libs.material)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
