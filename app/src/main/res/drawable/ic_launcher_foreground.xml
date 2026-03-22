@@ -29,29 +29,21 @@
         android:fillColor="#FFF8F0"
         android:pathData="M54,40 C44,40 36,48 36,60 C36,70 44,78 54,78 C64,78 72,70 72,60 C72,48 64,40 54,40 Z" />
     <!-- Eyes - left -->
-    <circle
+    <path
         android:fillColor="#321911"
-        android:cx="44"
-        android:cy="55"
-        android:r="4" />
+        android:pathData="M40,55 A4,4 0 1,0 48,55 A4,4 0 1,0 40,55 Z" />
     <!-- Eyes - right -->
-    <circle
+    <path
         android:fillColor="#321911"
-        android:cx="64"
-        android:cy="55"
-        android:r="4" />
+        android:pathData="M60,55 A4,4 0 1,0 68,55 A4,4 0 1,0 60,55 Z" />
     <!-- Eye shine - left -->
-    <circle
+    <path
         android:fillColor="#FFFFFF"
-        android:cx="46"
-        android:cy="53"
-        android:r="1.5" />
+        android:pathData="M44.5,53 A1.5,1.5 0 1,0 47.5,53 A1.5,1.5 0 1,0 44.5,53 Z" />
     <!-- Eye shine - right -->
-    <circle
+    <path
         android:fillColor="#FFFFFF"
-        android:cx="66"
-        android:cy="53"
-        android:r="1.5" />
+        android:pathData="M64.5,53 A1.5,1.5 0 1,0 67.5,53 A1.5,1.5 0 1,0 64.5,53 Z" />
     <!-- Nose -->
     <path
         android:fillColor="#5D4037"
