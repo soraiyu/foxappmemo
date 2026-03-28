@@ -95,7 +95,7 @@ fun AddEditScreen(
 
     // Installed-apps picker bottom sheet
     if (uiState.showAppPicker) {
-        val sheetState = rememberModalBottomSheetState(skipPartialExpansion = true)
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             onDismissRequest = viewModel::hideAppPicker,
             sheetState = sheetState,
