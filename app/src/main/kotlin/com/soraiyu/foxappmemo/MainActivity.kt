@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
      * that needs the data.
      */
     @Inject
-    lateinit var installedAppsRepository: InstalledAppsRepository
+    private lateinit var installedAppsRepository: InstalledAppsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

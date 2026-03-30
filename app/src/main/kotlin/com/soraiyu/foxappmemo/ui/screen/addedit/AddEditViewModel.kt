@@ -14,6 +14,7 @@ import com.soraiyu.foxappmemo.data.repository.InstalledAppsRepository
 import com.soraiyu.foxappmemo.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class AddEditUiState(
@@ -222,15 +224,17 @@ class AddEditViewModel @Inject constructor(
      * the selected [app] and closes the picker bottom sheet.
      */
     fun selectInstalledApp(app: InstalledAppInfo) {
-        val category = resolveAppCategory(app.packageName)
-        _uiState.update {
-            it.copy(
-                packageName = app.packageName,
-                appName = app.appName,
-                tags = if (category != null && category !in it.tags) it.tags + category else it.tags,
-                showAppPicker = false,
-                appPickerQuery = "",
-            )
+        viewModelScope.launch {
+            val category = withContext(Dispatchers.IO) { resolveAppCategory(app.packageName) }
+            _uiState.update {
+                it.copy(
+                    packageName = app.packageName,
+                    appName = app.appName,
+                    tags = if (category != null && category !in it.tags) it.tags + category else it.tags,
+                    showAppPicker = false,
+                    appPickerQuery = "",
+                )
+            }
         }
     }
 

@@ -57,25 +57,28 @@ class InstalledAppsRepository @Inject constructor(
 
     private fun loadInstalledApps() {
         repositoryScope.launch {
-            val pm = context.packageManager
-            @Suppress("DEPRECATION")
-            val rawList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
-            } else {
-                pm.getInstalledApplications(0)
-            }
-            val apps = rawList
-                .map { info ->
-                    InstalledAppInfo(
-                        packageName = info.packageName,
-                        appName = pm.getApplicationLabel(info).toString(),
-                        isSystemApp = (info.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
-                    )
+            try {
+                val pm = context.packageManager
+                @Suppress("DEPRECATION")
+                val rawList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
+                } else {
+                    pm.getInstalledApplications(0)
                 }
-                .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.appName })
+                val apps = rawList
+                    .map { info ->
+                        InstalledAppInfo(
+                            packageName = info.packageName,
+                            appName = pm.getApplicationLabel(info).toString(),
+                            isSystemApp = (info.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+                        )
+                    }
+                    .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.appName })
 
-            _allApps.value = apps
-            _isLoading.value = false
+                _allApps.value = apps
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

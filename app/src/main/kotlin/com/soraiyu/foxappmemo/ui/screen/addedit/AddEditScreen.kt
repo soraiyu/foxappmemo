@@ -324,7 +324,7 @@ private fun AppPickerContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(400.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     CircularProgressIndicator()
@@ -334,7 +334,7 @@ private fun AppPickerContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp),
+                        .height(400.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
