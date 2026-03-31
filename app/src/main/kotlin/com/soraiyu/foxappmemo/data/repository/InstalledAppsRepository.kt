@@ -76,6 +76,9 @@ class InstalledAppsRepository @Inject constructor(
                     .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it.appName })
 
                 _allApps.value = apps
+            } catch (_: Exception) {
+                // Degrade gracefully — leave the list empty so the UI can show an
+                // appropriate empty state rather than crashing the app.
             } finally {
                 _isLoading.value = false
             }

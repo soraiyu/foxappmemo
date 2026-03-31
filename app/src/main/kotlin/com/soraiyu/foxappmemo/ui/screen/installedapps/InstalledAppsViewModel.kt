@@ -23,7 +23,7 @@ data class InstalledAppsUiState(
 
 @HiltViewModel
 class InstalledAppsViewModel @Inject constructor(
-    installedAppsRepository: InstalledAppsRepository,
+    private val installedAppsRepository: InstalledAppsRepository,
 ) : ViewModel() {
 
     private val _query = MutableStateFlow("")
