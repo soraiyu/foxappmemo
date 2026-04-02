@@ -1,21 +1,28 @@
 package com.soraiyu.foxappmemo.ui.screen.addedit
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,17 +30,21 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,9 +54,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.soraiyu.foxappmemo.data.entity.AppStatus
+import com.soraiyu.foxappmemo.data.repository.InstalledAppInfo
+import com.soraiyu.foxappmemo.ui.component.AppIcon
 import com.soraiyu.foxappmemo.ui.component.RatingSelector
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -56,6 +70,8 @@ fun AddEditScreen(
     viewModel: AddEditViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val filteredInstalledApps by viewModel.filteredInstalledApps.collectAsState()
+    val installedAppsLoading by viewModel.installedAppsLoading.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Apply shared text once on first composition
@@ -75,6 +91,24 @@ fun AddEditScreen(
         val err = uiState.error ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(err)
         viewModel.clearError()
+    }
+
+    // Installed-apps picker bottom sheet
+    if (uiState.showAppPicker) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = viewModel::hideAppPicker,
+            sheetState = sheetState,
+        ) {
+            AppPickerContent(
+                query = uiState.appPickerQuery,
+                onQueryChange = viewModel::setAppPickerQuery,
+                isLoading = installedAppsLoading,
+                apps = filteredInstalledApps,
+                onSelectApp = viewModel::selectInstalledApp,
+                onDismiss = viewModel::hideAppPicker,
+            )
+        }
     }
 
     Scaffold(
@@ -118,6 +152,21 @@ fun AddEditScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            // "Select from installed apps" button — visible in add mode only
+            if (!uiState.isEditMode) {
+                OutlinedButton(
+                    onClick = viewModel::showAppPicker,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PhoneAndroid,
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.padding(horizontal = 4.dp))
+                    Text("インストール済みアプリから選ぶ")
+                }
+            }
+
             // Package Name
             OutlinedTextField(
                 value = uiState.packageName,
@@ -216,6 +265,146 @@ fun AddEditScreen(
     }
 }
 
+/**
+ * Content rendered inside the installed-apps picker [ModalBottomSheet].
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AppPickerContent(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    isLoading: Boolean,
+    apps: List<InstalledAppInfo>,
+    onSelectApp: (InstalledAppInfo) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "アプリを選択",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(Icons.Default.Close, contentDescription = "閉じる")
+            }
+        }
+
+        OutlinedTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            placeholder = { Text("アプリを検索…") },
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            trailingIcon = {
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") }) {
+                        Icon(Icons.Default.Close, contentDescription = "クリア")
+                    }
+                }
+            },
+            singleLine = true,
+        )
+
+        HorizontalDivider()
+
+        when {
+            isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            apps.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = if (query.isNotEmpty()) {
+                            "「$query」に一致するアプリはありません"
+                        } else {
+                            "インストール済みアプリが見つかりません"
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(400.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                ) {
+                    items(
+                        items = apps,
+                        key = { it.packageName },
+                    ) { app ->
+                        AppPickerItem(
+                            app = app,
+                            onClick = { onSelectApp(app) },
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppPickerItem(
+    app: InstalledAppInfo,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AppIcon(packageName = app.packageName, size = 40.dp)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                text = app.appName,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = app.packageName,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StatusDropdown(
@@ -255,3 +444,4 @@ private fun StatusDropdown(
         }
     }
 }
+
