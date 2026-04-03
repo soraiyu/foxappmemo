@@ -14,6 +14,7 @@ import com.soraiyu.foxappmemo.data.entity.AppStatus
 import com.soraiyu.foxappmemo.ui.theme.StatusColorAvoid
 import com.soraiyu.foxappmemo.ui.theme.StatusColorBlacklist
 import com.soraiyu.foxappmemo.ui.theme.StatusColorMain
+import com.soraiyu.foxappmemo.ui.theme.StatusColorOngoing
 import com.soraiyu.foxappmemo.ui.theme.StatusColorReconsider
 import com.soraiyu.foxappmemo.ui.theme.StatusColorTrying
 
@@ -39,6 +40,7 @@ fun StatusBadge(status: String, modifier: Modifier = Modifier) {
 
 private fun statusColor(status: AppStatus): Color = when (status) {
     AppStatus.TRYING -> StatusColorTrying
+    AppStatus.ONGOING -> StatusColorOngoing
     AppStatus.MAIN -> StatusColorMain
     AppStatus.AVOID -> StatusColorAvoid
     AppStatus.BLACKLIST -> StatusColorBlacklist

@@ -16,6 +16,7 @@ enum class AppRating(val value: Int, val label: String) {
 
 enum class AppStatus(val label: String) {
     TRYING("trying"),
+    ONGOING("ongoing"),
     MAIN("main"),
     AVOID("avoid"),
     BLACKLIST("blacklist"),

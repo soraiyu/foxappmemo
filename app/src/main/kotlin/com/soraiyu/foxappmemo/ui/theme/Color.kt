@@ -19,6 +19,7 @@ val FoxCream = Color(0xFFFFF8F0)
 
 // Status badge colors
 val StatusColorTrying = Color(0xFF2196F3)
+val StatusColorOngoing = Color(0xFF00BCD4)
 val StatusColorMain = Color(0xFF4CAF50)
 val StatusColorAvoid = Color(0xFFFF9800)
 val StatusColorBlacklist = Color(0xFFF44336)
