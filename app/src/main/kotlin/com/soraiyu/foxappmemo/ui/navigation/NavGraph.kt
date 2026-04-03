@@ -28,10 +28,10 @@ private const val ARG_APP_NAME = "appName"
 @Composable
 fun FoxAppMemoNavGraph(sharedText: String? = null) {
     val navController = rememberNavController()
-    val context = LocalContext.current
+    val appContext = LocalContext.current.applicationContext
 
     val startDestination = remember {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         if (prefs.getBoolean(KEY_ONBOARDING_SHOWN, false)) ROUTE_MAIN else ROUTE_ONBOARDING
     }
 
@@ -39,10 +39,10 @@ fun FoxAppMemoNavGraph(sharedText: String? = null) {
         composable(ROUTE_ONBOARDING) {
             OnboardingScreen(
                 onComplete = {
-                    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                         .edit()
                         .putBoolean(KEY_ONBOARDING_SHOWN, true)
-                        .apply()
+                        .commit()
                     navController.navigate(ROUTE_MAIN) {
                         popUpTo(ROUTE_ONBOARDING) { inclusive = true }
                     }
