@@ -1,7 +1,10 @@
 package com.soraiyu.foxappmemo.ui.navigation
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,7 +13,12 @@ import androidx.navigation.navArgument
 import com.soraiyu.foxappmemo.ui.screen.addedit.AddEditScreen
 import com.soraiyu.foxappmemo.ui.screen.installedapps.InstalledAppsScreen
 import com.soraiyu.foxappmemo.ui.screen.main.MainScreen
+import com.soraiyu.foxappmemo.ui.screen.onboarding.OnboardingScreen
 
+private const val PREFS_NAME = "foxappmemo_prefs"
+private const val KEY_ONBOARDING_SHOWN = "onboarding_shown"
+
+private const val ROUTE_ONBOARDING = "onboarding"
 private const val ROUTE_MAIN = "main"
 private const val ROUTE_ADD_EDIT = "add_edit"
 private const val ROUTE_INSTALLED_APPS = "installed_apps"
@@ -20,8 +28,28 @@ private const val ARG_APP_NAME = "appName"
 @Composable
 fun FoxAppMemoNavGraph(sharedText: String? = null) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = ROUTE_MAIN) {
+    val startDestination = remember {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        if (prefs.getBoolean(KEY_ONBOARDING_SHOWN, false)) ROUTE_MAIN else ROUTE_ONBOARDING
+    }
+
+    NavHost(navController = navController, startDestination = startDestination) {
+        composable(ROUTE_ONBOARDING) {
+            OnboardingScreen(
+                onComplete = {
+                    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                        .edit()
+                        .putBoolean(KEY_ONBOARDING_SHOWN, true)
+                        .apply()
+                    navController.navigate(ROUTE_MAIN) {
+                        popUpTo(ROUTE_ONBOARDING) { inclusive = true }
+                    }
+                },
+            )
+        }
+
         composable(ROUTE_MAIN) {
             MainScreen(
                 onNavigateToAddEdit = { packageName ->
