@@ -132,7 +132,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     }
                 },
             ) {
-                Text(if (isLastPage) stringResource(R.string.onboarding_start) else stringResource(R.string.onboarding_next))
+                Text(stringResource(if (isLastPage) R.string.onboarding_start else R.string.onboarding_next))
             }
         }
     }

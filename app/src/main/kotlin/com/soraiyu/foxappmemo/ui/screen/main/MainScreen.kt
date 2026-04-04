@@ -101,7 +101,7 @@ fun MainScreen(
                     }
                     snackbarHostState.showSnackbar(exportSavedMsg)
                 } catch (e: Exception) {
-                    snackbarHostState.showSnackbar(exportFailedMsg.format(e.message))
+                    snackbarHostState.showSnackbar(String.format(exportFailedMsg, e.message ?: ""))
                 }
             }
         }
