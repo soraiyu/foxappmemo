@@ -96,8 +96,10 @@ fun MainScreen(
         if (uri != null && json != null) {
             scope.launch(Dispatchers.IO) {
                 val message = try {
-                    context.contentResolver.openOutputStream(uri)?.use { stream ->
-                        stream.write(json.toByteArray(Charsets.UTF_8))
+                    val stream = context.contentResolver.openOutputStream(uri)
+                        ?: throw IllegalStateException("Unable to open output stream")
+                    stream.use {
+                        it.write(json.toByteArray(Charsets.UTF_8))
                     }
                     exportSavedMsg
                 } catch (e: Exception) {
