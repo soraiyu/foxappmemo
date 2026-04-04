@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.soraiyu.foxappmemo.data.entity.AppRating
 
@@ -28,7 +29,7 @@ fun RatingSelector(
             FilterChip(
                 selected = isSelected,
                 onClick = { onRatingChange(if (isSelected) null else appRating.value) },
-                label = { Text(appRating.label) },
+                label = { Text(stringResource(appRating.labelResId)) },
             )
         }
     }
@@ -43,7 +44,7 @@ fun RatingLabel(
     val appRating = AppRating.fromValue(rating)
     if (appRating != null) {
         Text(
-            text = appRating.label,
+            text = stringResource(appRating.labelResId),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = modifier,

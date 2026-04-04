@@ -30,37 +30,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.soraiyu.foxappmemo.R
 import kotlinx.coroutines.launch
 
 private data class OnboardingPage(
     val icon: ImageVector,
-    val title: String,
-    val description: String,
+    val titleResId: Int,
+    val descResId: Int,
 )
 
 private val pages = listOf(
     OnboardingPage(
         icon = Icons.Default.Apps,
-        title = "FoxAppMemoへようこそ！",
-        description = "インストールしたアプリの感想や評価をメモしておけるアプリです。\nお気に入りや気になるアプリを記録しましょう。",
+        titleResId = R.string.onboarding_title_1,
+        descResId = R.string.onboarding_desc_1,
     ),
     OnboardingPage(
         icon = Icons.Default.AddCircle,
-        title = "アプリを追加する",
-        description = "右下の＋ボタンからアプリを手動で登録できます。\n上部の📱ボタンを押すと端末にインストール済みのアプリ一覧が表示され、タップするだけで追加できます。",
+        titleResId = R.string.onboarding_title_2,
+        descResId = R.string.onboarding_desc_2,
     ),
     OnboardingPage(
         icon = Icons.Default.Star,
-        title = "ステータス・評価・タグ",
-        description = "ステータスで管理状態を記録（trying / ongoing / main など）。\n評価でお気に入り度を残し、自由なタグで分類できます。",
+        titleResId = R.string.onboarding_title_3,
+        descResId = R.string.onboarding_desc_3,
     ),
     OnboardingPage(
         icon = Icons.Default.FilterList,
-        title = "絞り込み・検索",
-        description = "検索バーでアプリ名を素早く検索。\nフィルターボタンでステータス・評価・タグを組み合わせて絞り込むことができます。",
+        titleResId = R.string.onboarding_title_4,
+        descResId = R.string.onboarding_desc_4,
     ),
 )
 
@@ -114,7 +116,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
         ) {
             if (!isLastPage) {
                 TextButton(onClick = onComplete) {
-                    Text("スキップ")
+                    Text(stringResource(R.string.onboarding_skip))
                 }
             } else {
                 Spacer(modifier = Modifier.weight(1f))
@@ -130,7 +132,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                     }
                 },
             ) {
-                Text(if (isLastPage) "はじめる" else "次へ")
+                Text(if (isLastPage) stringResource(R.string.onboarding_start) else stringResource(R.string.onboarding_next))
             }
         }
     }
@@ -153,14 +155,14 @@ private fun OnboardingPageContent(page: OnboardingPage) {
         )
         Spacer(modifier = Modifier.height(32.dp))
         Text(
-            text = page.title,
+            text = stringResource(page.titleResId),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = page.description,
+            text = stringResource(page.descResId),
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

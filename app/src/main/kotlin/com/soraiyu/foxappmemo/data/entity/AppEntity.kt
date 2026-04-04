@@ -1,26 +1,28 @@
 package com.soraiyu.foxappmemo.data.entity
 
+import androidx.annotation.StringRes
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.soraiyu.foxappmemo.R
 import kotlinx.serialization.Serializable
 
-enum class AppRating(val value: Int, val label: String) {
-    NOT_FOR_ME(1, "自分向きじゃない"),
-    NORMAL(2, "ふつう"),
-    LIKE(3, "好き");
+enum class AppRating(val value: Int, @StringRes val labelResId: Int) {
+    NOT_FOR_ME(1, R.string.rating_not_for_me),
+    NORMAL(2, R.string.rating_normal),
+    LIKE(3, R.string.rating_like);
 
     companion object {
         fun fromValue(value: Int?): AppRating? = entries.firstOrNull { it.value == value }
     }
 }
 
-enum class AppStatus(val label: String) {
-    TRYING("trying"),
-    ONGOING("ongoing"),
-    MAIN("main"),
-    AVOID("avoid"),
-    BLACKLIST("blacklist"),
-    RECONSIDER("reconsider");
+enum class AppStatus(val label: String, @StringRes val labelResId: Int) {
+    TRYING("trying", R.string.status_trying),
+    ONGOING("ongoing", R.string.status_ongoing),
+    MAIN("main", R.string.status_main),
+    AVOID("avoid", R.string.status_avoid),
+    BLACKLIST("blacklist", R.string.status_blacklist),
+    RECONSIDER("reconsider", R.string.status_reconsider);
 
     companion object {
         fun fromLabel(label: String): AppStatus =

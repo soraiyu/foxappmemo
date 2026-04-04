@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +29,7 @@ fun StatusBadge(status: String, modifier: Modifier = Modifier) {
         shape = RoundedCornerShape(4.dp),
     ) {
         Text(
-            text = appStatus.label.uppercase(),
+            text = stringResource(appStatus.labelResId).uppercase(),
             modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
             color = color,
             fontSize = 10.sp,
