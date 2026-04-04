@@ -61,6 +61,7 @@ import com.soraiyu.foxappmemo.data.entity.AppWithTags
 import com.soraiyu.foxappmemo.ui.component.AppListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -77,7 +78,6 @@ fun MainScreen(
 
     val deleteMsg = stringResource(R.string.deleted)
     val exportSavedMsg = stringResource(R.string.export_saved)
-    val exportFailedMsg = stringResource(R.string.export_failed)
 
     var pendingDeletePackage by remember { mutableStateOf<String?>(null) }
 
@@ -95,13 +95,16 @@ fun MainScreen(
         capturedExportJson = null
         if (uri != null && json != null) {
             scope.launch(Dispatchers.IO) {
-                try {
+                val message = try {
                     context.contentResolver.openOutputStream(uri)?.use { stream ->
                         stream.write(json.toByteArray(Charsets.UTF_8))
                     }
-                    snackbarHostState.showSnackbar(exportSavedMsg)
+                    exportSavedMsg
                 } catch (e: Exception) {
-                    snackbarHostState.showSnackbar(String.format(exportFailedMsg, e.message ?: ""))
+                    context.getString(R.string.export_failed, e.message ?: "")
+                }
+                withContext(Dispatchers.Main) {
+                    snackbarHostState.showSnackbar(message)
                 }
             }
         }

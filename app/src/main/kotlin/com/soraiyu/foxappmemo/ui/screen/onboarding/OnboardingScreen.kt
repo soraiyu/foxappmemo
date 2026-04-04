@@ -1,5 +1,6 @@
 package com.soraiyu.foxappmemo.ui.screen.onboarding
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,8 +40,8 @@ import kotlinx.coroutines.launch
 
 private data class OnboardingPage(
     val icon: ImageVector,
-    val titleResId: Int,
-    val descResId: Int,
+    @StringRes val titleResId: Int,
+    @StringRes val descResId: Int,
 )
 
 private val pages = listOf(
