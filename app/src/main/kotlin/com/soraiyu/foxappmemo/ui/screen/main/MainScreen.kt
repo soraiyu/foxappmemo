@@ -61,6 +61,7 @@ import com.soraiyu.foxappmemo.data.entity.AppWithTags
 import com.soraiyu.foxappmemo.ui.component.AppListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -74,6 +75,9 @@ fun MainScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scaffoldState = rememberBottomSheetScaffoldState()
     val context = LocalContext.current
+
+    val deleteMsg = stringResource(R.string.deleted)
+    val exportSavedMsg = stringResource(R.string.export_saved)
 
     var pendingDeletePackage by remember { mutableStateOf<String?>(null) }
 
@@ -91,13 +95,18 @@ fun MainScreen(
         capturedExportJson = null
         if (uri != null && json != null) {
             scope.launch(Dispatchers.IO) {
-                try {
-                    context.contentResolver.openOutputStream(uri)?.use { stream ->
-                        stream.write(json.toByteArray(Charsets.UTF_8))
+                val message = try {
+                    val stream = context.contentResolver.openOutputStream(uri)
+                        ?: throw IllegalStateException("Unable to open output stream")
+                    stream.use {
+                        it.write(json.toByteArray(Charsets.UTF_8))
                     }
-                    snackbarHostState.showSnackbar("Export saved")
+                    exportSavedMsg
                 } catch (e: Exception) {
-                    snackbarHostState.showSnackbar("Export failed: ${e.message}")
+                    context.getString(R.string.export_failed, e.message ?: "")
+                }
+                withContext(Dispatchers.Main) {
+                    snackbarHostState.showSnackbar(message)
                 }
             }
         }
@@ -118,17 +127,17 @@ fun MainScreen(
     pendingDeletePackage?.let { pkg ->
         AlertDialog(
             onDismissRequest = { pendingDeletePackage = null },
-            title = { Text("Delete App") },
-            text = { Text("Remove \"$pkg\" from your memo list?") },
+            title = { Text(stringResource(R.string.delete_app)) },
+            text = { Text(stringResource(R.string.delete_app_confirm, pkg)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.deleteApp(pkg)
                     pendingDeletePackage = null
-                    scope.launch { snackbarHostState.showSnackbar("Deleted") }
-                }) { Text("Delete") }
+                    scope.launch { snackbarHostState.showSnackbar(deleteMsg) }
+                }) { Text(stringResource(R.string.delete)) }
             },
             dismissButton = {
-                TextButton(onClick = { pendingDeletePackage = null }) { Text("Cancel") }
+                TextButton(onClick = { pendingDeletePackage = null }) { Text(stringResource(R.string.cancel)) }
             },
         )
     }
@@ -154,15 +163,15 @@ fun MainScreen(
                 ),
                 actions = {
                     IconButton(onClick = onNavigateToInstalledApps) {
-                        Icon(Icons.Default.PhoneAndroid, contentDescription = "Installed Apps")
+                        Icon(Icons.Default.PhoneAndroid, contentDescription = stringResource(R.string.installed_apps))
                     }
                     IconButton(onClick = {
                         scope.launch { scaffoldState.bottomSheetState.expand() }
                     }) {
-                        Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                        Icon(Icons.Default.FilterList, contentDescription = stringResource(R.string.filter))
                     }
                     IconButton(onClick = { viewModel.exportToJson() }) {
-                        Icon(Icons.Default.IosShare, contentDescription = "Export JSON")
+                        Icon(Icons.Default.IosShare, contentDescription = stringResource(R.string.export_json))
                     }
                 },
             )
@@ -249,7 +258,7 @@ fun MainScreen(
                 onClick = { onNavigateToAddEdit(null) },
                 modifier = Modifier.padding(16.dp),
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add App")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_app))
             }
         }
     }
@@ -284,7 +293,7 @@ private fun SwipeToDismissAppItem(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error,
                 )
             }
@@ -310,19 +319,19 @@ private fun FilterPanel(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Status", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.filter_status), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AppStatus.entries.forEach { status ->
                 FilterChip(
                     selected = status in uiState.filter.selectedStatuses,
                     onClick = { onToggleStatus(status) },
-                    label = { Text(status.label) },
+                    label = { Text(stringResource(status.labelResId)) },
                 )
             }
         }
 
         if (uiState.allTags.isNotEmpty()) {
-            Text("Tags", style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(R.string.filter_tags), style = MaterialTheme.typography.titleSmall)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 uiState.allTags.forEach { tag ->
                     FilterChip(
@@ -334,19 +343,19 @@ private fun FilterPanel(
             }
         }
 
-        Text("評価", style = MaterialTheme.typography.titleSmall)
+        Text(stringResource(R.string.filter_rating), style = MaterialTheme.typography.titleSmall)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             AppRating.entries.forEach { r ->
                 FilterChip(
                     selected = r.value in uiState.filter.selectedRatings,
                     onClick = { onToggleRating(r.value) },
-                    label = { Text(r.label) },
+                    label = { Text(stringResource(r.labelResId)) },
                 )
             }
         }
 
         TextButton(onClick = onClearFilters) {
-            Text("Clear Filters")
+            Text(stringResource(R.string.clear_filters))
         }
     }
 }

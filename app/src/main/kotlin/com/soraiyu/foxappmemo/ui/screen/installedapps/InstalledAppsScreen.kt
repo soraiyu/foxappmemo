@@ -34,9 +34,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.soraiyu.foxappmemo.R
 import com.soraiyu.foxappmemo.ui.component.AppIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +54,7 @@ fun InstalledAppsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Installed Apps") },
+                title = { Text(stringResource(R.string.installed_apps)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -61,7 +63,7 @@ fun InstalledAppsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                         )
                     }
                 },
@@ -80,12 +82,12 @@ fun InstalledAppsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = { Text("Search installed apps…") },
+                placeholder = { Text(stringResource(R.string.search_installed_apps)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (uiState.query.isNotEmpty()) {
                         IconButton(onClick = { viewModel.setQuery("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear))
                         }
                     }
                 },
@@ -101,7 +103,7 @@ fun InstalledAppsScreen(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Show system apps",
+                    text = stringResource(R.string.show_system_apps),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Switch(
@@ -124,9 +126,9 @@ fun InstalledAppsScreen(
                 ) {
                     Text(
                         text = if (uiState.query.isNotEmpty()) {
-                            "No apps match \"${uiState.query}\""
+                            stringResource(R.string.no_apps_match_query, uiState.query)
                         } else {
-                            "No installed apps found"
+                            stringResource(R.string.no_installed_apps)
                         },
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
