@@ -1,0 +1,28 @@
+Categories:
+  - Utilities
+
+License: MIT
+
+AuthorName: soraiyu
+
+SourceCode: https://github.com/soraiyu/foxappmemo
+IssueTracker: https://github.com/soraiyu/foxappmemo/issues
+Changelog: https://github.com/soraiyu/foxappmemo/blob/HEAD/CHANGELOG.md
+
+AutoName: FoxAppMemo
+
+RepoType: git
+Repo: https://github.com/soraiyu/foxappmemo
+
+Builds:
+  - versionName: '1.0'
+    versionCode: 1
+    commit: d826e3707b48f8e35c40eeca34f24eaeaf94b580
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0'
+CurrentVersionCode: 1

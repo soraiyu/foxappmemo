@@ -1,6 +1,47 @@
 # F-Droid Build Notes
 
-This document describes how to reproduce a reproducible / F-Droid-compatible build of **FoxAppMemo**.
+This document describes how to reproduce a reproducible / F-Droid-compatible build of **FoxAppMemo** and how to submit it to F-Droid.
+
+---
+
+## Why F-Droid submission makes sense
+
+FoxAppMemo is a strong candidate for F-Droid because it meets all core requirements:
+
+| Requirement | Status |
+|---|---|
+| Free and Open Source (MIT) | ✅ |
+| No proprietary SDKs | ✅ (AndroidX / Jetpack only) |
+| No Firebase / Play Services / Analytics | ✅ |
+| No INTERNET permission | ✅ |
+| No ads or in-app purchases | ✅ |
+| Reproducible build from source | ✅ |
+| Fastlane metadata present | ✅ |
+
+---
+
+## How to submit to F-Droid
+
+1. **Open a Request for Packaging (RFP)** on the F-Droid issue tracker:  
+   <https://gitlab.com/fdroid/rfp/-/issues/new>  
+   Use the provided template and include the source URL and a brief description.
+
+2. **Wait for a packager** to pick up the request. You can also write the build recipe yourself and open a merge request against [fdroid/fdroiddata](https://gitlab.com/fdroid/fdroiddata).
+
+3. **The build recipe** (`metadata/com.soraiyu.foxappmemo.yml`) for fdroiddata should look like the fragment in the [F-Droid metadata](#f-droid-metadata) section below.
+
+4. **Add screenshots** to `fastlane/metadata/android/en-US/images/phoneScreenshots/` (and `ja-JP/images/phoneScreenshots/`) in the repository. F-Droid will pick them up automatically via the fastlane supply format. Without screenshots the store listing will appear bare.
+
+5. **Add an app icon** at `fastlane/metadata/android/en-US/images/icon.png` (512 × 512 px) for the F-Droid listing.
+
+---
+
+## Locales included in fastlane metadata
+
+| Locale | Path |
+|---|---|
+| English (en-US) | `fastlane/metadata/android/en-US/` |
+| Japanese (ja-JP) | `fastlane/metadata/android/ja-JP/` |
 
 ---
 
