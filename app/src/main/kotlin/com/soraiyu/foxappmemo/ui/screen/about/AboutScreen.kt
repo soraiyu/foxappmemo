@@ -1,7 +1,9 @@
 package com.soraiyu.foxappmemo.ui.screen.about
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +28,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.soraiyu.foxappmemo.R
+
+private const val SPONSORS_URL = "https://github.com/sponsors/soraiyu"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,8 +76,12 @@ fun AboutScreen(onNavigateBack: () -> Unit) {
 
             Button(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sponsors/soraiyu"))
-                    runCatching { context.startActivity(intent) }
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(SPONSORS_URL))
+                    try {
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        Toast.makeText(context, R.string.open_browser_failed, Toast.LENGTH_SHORT).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,

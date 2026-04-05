@@ -61,7 +61,8 @@
     <string name="onboarding_desc_4">検索バーでアプリ名を素早く検索。\nフィルターボタンでステータス・評価・タグを組み合わせて絞り込むことができます。</string>
     <string name="about">このアプリについて</string>
     <string name="about_description">FoxAppMemo — インストール済みアプリの感想や評価を記録するアプリです。</string>
-    <string name="sponsor">開発者を支援する ❤</string>
+    <string name="sponsor">開発者を支援する</string>
+    <string name="open_browser_failed">ブラウザを開けませんでした</string>
     <string name="onboarding_skip">スキップ</string>
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_start">はじめる</string>
