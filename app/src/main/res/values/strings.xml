@@ -59,6 +59,9 @@
     <string name="onboarding_desc_3">Use Status to track app state (trying / ongoing / main, etc.).\nAdd a rating for favorites, and organize with custom tags.</string>
     <string name="onboarding_title_4">Filter &amp; Search</string>
     <string name="onboarding_desc_4">Quickly search app names in the search bar.\nCombine Status, Rating, and Tags with the filter button to narrow down results.</string>
+    <string name="about">About</string>
+    <string name="about_description">FoxAppMemo — an app for recording impressions and ratings of your installed apps.</string>
+    <string name="sponsor">Support the Developer ❤</string>
     <string name="onboarding_skip">Skip</string>
     <string name="onboarding_next">Next</string>
     <string name="onboarding_start">Get Started</string>

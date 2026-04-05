@@ -59,6 +59,9 @@
     <string name="onboarding_desc_3">ステータスで管理状態を記録（trying / ongoing / main など）。\n評価でお気に入り度を残し、自由なタグで分類できます。</string>
     <string name="onboarding_title_4">絞り込み・検索</string>
     <string name="onboarding_desc_4">検索バーでアプリ名を素早く検索。\nフィルターボタンでステータス・評価・タグを組み合わせて絞り込むことができます。</string>
+    <string name="about">このアプリについて</string>
+    <string name="about_description">FoxAppMemo — インストール済みアプリの感想や評価を記録するアプリです。</string>
+    <string name="sponsor">開発者を支援する ❤</string>
     <string name="onboarding_skip">スキップ</string>
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_start">はじめる</string>

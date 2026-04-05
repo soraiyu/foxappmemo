@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.IosShare
 import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Search
@@ -68,6 +69,7 @@ import kotlinx.coroutines.withContext
 fun MainScreen(
     onNavigateToAddEdit: (packageName: String?) -> Unit,
     onNavigateToInstalledApps: () -> Unit,
+    onNavigateToAbout: () -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -172,6 +174,9 @@ fun MainScreen(
                     }
                     IconButton(onClick = { viewModel.exportToJson() }) {
                         Icon(Icons.Default.IosShare, contentDescription = stringResource(R.string.export_json))
+                    }
+                    IconButton(onClick = onNavigateToAbout) {
+                        Icon(Icons.Default.Info, contentDescription = stringResource(R.string.about))
                     }
                 },
             )
