@@ -73,7 +73,7 @@ fun AboutScreen(onNavigateBack: () -> Unit) {
             Button(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/sponsors/soraiyu"))
-                    context.startActivity(intent)
+                    runCatching { context.startActivity(intent) }
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary,
