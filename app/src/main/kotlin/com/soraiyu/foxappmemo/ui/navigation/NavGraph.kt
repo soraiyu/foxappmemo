@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.soraiyu.foxappmemo.ui.screen.about.AboutScreen
 import com.soraiyu.foxappmemo.ui.screen.addedit.AddEditScreen
 import com.soraiyu.foxappmemo.ui.screen.installedapps.InstalledAppsScreen
 import com.soraiyu.foxappmemo.ui.screen.main.MainScreen
@@ -22,6 +23,7 @@ private const val ROUTE_ONBOARDING = "onboarding"
 private const val ROUTE_MAIN = "main"
 private const val ROUTE_ADD_EDIT = "add_edit"
 private const val ROUTE_INSTALLED_APPS = "installed_apps"
+private const val ROUTE_ABOUT = "about"
 private const val ARG_PACKAGE_NAME = "packageName"
 private const val ARG_APP_NAME = "appName"
 
@@ -63,6 +65,9 @@ fun FoxAppMemoNavGraph(sharedText: String? = null) {
                 onNavigateToInstalledApps = {
                     navController.navigate(ROUTE_INSTALLED_APPS)
                 },
+                onNavigateToAbout = {
+                    navController.navigate(ROUTE_ABOUT)
+                },
             )
         }
 
@@ -99,6 +104,9 @@ fun FoxAppMemoNavGraph(sharedText: String? = null) {
                     )
                 },
             )
+        }
+        composable(ROUTE_ABOUT) {
+            AboutScreen(onNavigateBack = { navController.popBackStack() })
         }
     }
 }
