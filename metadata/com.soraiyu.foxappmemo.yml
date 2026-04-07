@@ -17,7 +17,7 @@ Repo: https://github.com/soraiyu/foxappmemo
 Builds:
   - versionName: '1.0.0'
     versionCode: 1
-    commit: d826e3707b48f8e35c40eeca34f24eaeaf94b580
+    commit: '1.0.0'
     subdir: app
     gradle:
       - yes
