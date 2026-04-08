@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - F-Droid metadata and fastlane supply metadata added (ja-JP locale, screenshot directories)
-- versionName unified to semantic versioning format (1.0.0)
+- versionName values are now formatted according to semantic versioning
 
 ## [1.0.0] - 2026-04-05
 

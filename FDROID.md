@@ -134,7 +134,7 @@ Builds:
     commit: v1.1.0
     subdir: app
     gradle:
-      - release
+      - yes
 ```
 
 ---
