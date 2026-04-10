@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.2.0)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: write
+
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Error: version must be in X.Y.Z format (got: ${{ inputs.version }})"
+            exit 1
+          fi
+
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          TAG="v${{ inputs.version }}"
+          if git ls-remote --tags origin "$TAG" | grep -q "$TAG"; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $TAG already exists, skipping."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Extract release notes from CHANGELOG.md
+        if: steps.check_tag.outputs.exists == 'false'
+        id: notes
+        run: |
+          VERSION="${{ inputs.version }}"
+          # Extract the section for the given version from CHANGELOG.md
+          NOTES=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
+          if [ -z "$NOTES" ]; then
+            NOTES="Release $VERSION"
+          fi
+          # Write to a file to avoid quoting issues
+          echo "$NOTES" > /tmp/release_notes.md
+          echo "See CHANGELOG.md for full details." >> /tmp/release_notes.md
+
+      - name: Set up JDK 17
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        if: steps.check_tag.outputs.exists == 'false'
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        if: steps.check_tag.outputs.exists == 'false'
+        run: ./gradlew assembleDebug
+
+      - name: Create tag and GitHub release
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ inputs.version }}"
+          git tag "$TAG"
+          git push origin "$TAG"
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file /tmp/release_notes.md \
+            --target main \
+            app/build/outputs/apk/debug/app-debug.apk
