@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Package renamed from `com.soraiyu.foxappmemo` to `com.rtneg.foxappmemo`
 - Release workflow (`release.yml`) added with `workflow_dispatch` and version input
-- Release workflow updated to accept both `v1.2.0` and `1.2.0` version input formats
+- Release workflow updated to accept both `vX.Y.Z` and `X.Y.Z` semantic version input formats
 
 ## [1.1.0] - 2026-04-07
 

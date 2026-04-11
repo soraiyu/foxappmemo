@@ -131,9 +131,9 @@ SourceCode: https://github.com/soraiyu/foxappmemo
 IssueTracker: https://github.com/soraiyu/foxappmemo/issues
 
 Builds:
-  - versionName: '1.1.0'
-    versionCode: 2
-    commit: v1.1.0
+  - versionName: '1.2.0'
+    versionCode: 3
+    commit: v1.2.0
     subdir: app
     gradle:
       - yes
