@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-04-11
+
+### Changed
+
+- Package renamed from `com.soraiyu.foxappmemo` to `com.rtneg.foxappmemo`
+- Release workflow (`release.yml`) added with `workflow_dispatch` and version input
+- Release workflow updated to accept both `v1.2.0` and `1.2.0` version input formats
+
 ## [1.1.0] - 2026-04-07
 
 ### Changed
