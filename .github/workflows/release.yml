@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g. 1.2.0)'
+        description: 'Release version (e.g. v1.2.0)'
         required: true
         type: string
 
@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Validate version format
         run: |
-          if ! echo "${{ inputs.version }}" | grep -qE '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'; then
-            echo "Error: version must be a SemVer core version in X.Y.Z format without leading zeroes (got: ${{ inputs.version }})"
+          if ! echo "${{ inputs.version }}" | grep -qE '^v?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'; then
+            echo "Error: version must be a SemVer core version in X.Y.Z or vX.Y.Z format without leading zeroes (got: ${{ inputs.version }})"
             exit 1
           fi
 
@@ -33,8 +33,11 @@ jobs:
       - name: Check if tag already exists
         id: check_tag
         run: |
-          TAG="v${{ inputs.version }}"
-          if git ls-remote --tags origin "$TAG" | grep -q "$TAG"; then
+          TAG="${{ inputs.version }}"
+          # Normalize: ensure tag always has a v prefix
+          [[ "$TAG" == v* ]] || TAG="v$TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG$"; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Tag $TAG already exists, skipping."
           else
@@ -45,7 +48,8 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         id: notes
         run: |
-          VERSION="${{ inputs.version }}"
+          TAG="${{ steps.check_tag.outputs.tag }}"
+          VERSION="${TAG#v}"
           # Extract the section for the given version from CHANGELOG.md
           NOTES=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
           if [ -z "$NOTES" ]; then
@@ -76,7 +80,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v${{ inputs.version }}"
+          TAG="${{ steps.check_tag.outputs.tag }}"
           git tag "$TAG"
           git push origin "$TAG"
           gh release create "$TAG" \
