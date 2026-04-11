@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g. 1.2.0)'
+        description: 'Release version (e.g. v1.2.0)'
         required: true
         type: string
 
@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Validate version format
         run: |
-          if ! echo "${{ inputs.version }}" | grep -qE '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'; then
-            echo "Error: version must be a SemVer core version in X.Y.Z format without leading zeroes (got: ${{ inputs.version }})"
+          if ! echo "${{ inputs.version }}" | grep -qE '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'; then
+            echo "Error: version must be a SemVer core version in vX.Y.Z format without leading zeroes (got: ${{ inputs.version }})"
             exit 1
           fi
 
@@ -33,7 +33,7 @@ jobs:
       - name: Check if tag already exists
         id: check_tag
         run: |
-          TAG="v${{ inputs.version }}"
+          TAG="${{ inputs.version }}"
           if git ls-remote --tags origin "$TAG" | grep -q "$TAG"; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Tag $TAG already exists, skipping."
@@ -45,7 +45,7 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         id: notes
         run: |
-          VERSION="${{ inputs.version }}"
+          VERSION="${{ inputs.version }#v}"
           # Extract the section for the given version from CHANGELOG.md
           NOTES=$(awk "/^## \[$VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md)
           if [ -z "$NOTES" ]; then
@@ -76,7 +76,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v${{ inputs.version }}"
+          TAG="${{ inputs.version }}"
           git tag "$TAG"
           git push origin "$TAG"
           gh release create "$TAG" \
