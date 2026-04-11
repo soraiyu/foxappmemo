@@ -16,10 +16,10 @@
     kotlinx.serialization.KSerializer serializer(...);
 }
 
--keep,includedescriptorclasses class com.soraiyu.foxappmemo.**$$serializer { *; }
--keepclassmembers class com.soraiyu.foxappmemo.** {
+-keep,includedescriptorclasses class com.rtneg.foxappmemo.**$$serializer { *; }
+-keepclassmembers class com.rtneg.foxappmemo.** {
     *** Companion;
 }
--keepclasseswithmembers class com.soraiyu.foxappmemo.** {
+-keepclasseswithmembers class com.rtneg.foxappmemo.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
