@@ -12,7 +12,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.soraiyu.foxappmemo"
+        applicationId = "com.rtneg.foxappmemo"
         minSdk = 26
         targetSdk = 35
         versionCode = 2

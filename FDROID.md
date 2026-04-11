@@ -30,7 +30,7 @@ FoxAppMemo is a strong candidate for F-Droid because it meets all core requireme
 
 3. **The build recipe** (`metadata/com.rtneg.foxappmemo.yml`) for fdroiddata should look like the fragment in the [F-Droid metadata](#f-droid-metadata) section below.
 
-   **Note:** The source code package was renamed from `com.soraiyu.foxappmemo` to `com.rtneg.foxappmemo`, but the Android `applicationId` (F-Droid/device package identifier) intentionally remains `com.soraiyu.foxappmemo` to preserve upgrade continuity for existing users. Existing users will receive this as a normal update rather than a new app installation.
+   **Important:** because the Android application ID changed from `com.soraiyu.foxappmemo` to `com.rtneg.foxappmemo`, F-Droid will treat this as a **new package/listing**, not an update of the old one. Existing users will **not** receive an automatic update via F-Droid, and app data cannot be migrated automatically between these two package names.
 
 4. **Add screenshots** to `fastlane/metadata/android/en-US/images/phoneScreenshots/` (and `ja-JP/images/phoneScreenshots/`) in the repository. F-Droid will pick them up automatically via the fastlane supply format. Without screenshots the store listing will appear bare.
 
