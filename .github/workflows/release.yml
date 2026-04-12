@@ -71,9 +71,9 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         run: chmod +x gradlew
 
-      - name: Build debug APK
+      - name: Build release APK
         if: steps.check_tag.outputs.exists == 'false'
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
       - name: Create tag and GitHub release
         if: steps.check_tag.outputs.exists == 'false'
@@ -87,4 +87,4 @@ jobs:
             --title "$TAG" \
             --notes-file /tmp/release_notes.md \
             --target main \
-            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release-unsigned.apk
