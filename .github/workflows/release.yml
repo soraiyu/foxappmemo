@@ -71,9 +71,21 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         run: chmod +x gradlew
 
-      - name: Build debug APK
+      - name: Decode keystore
         if: steps.check_tag.outputs.exists == 'false'
-        run: ./gradlew assembleDebug
+        run: |
+          umask 077
+          printf '%s' "${{ secrets.SIGNING_KEYSTORE }}" | base64 -d > /tmp/release.keystore
+          chmod 600 /tmp/release.keystore
+
+      - name: Build release APK
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          SIGNING_STORE_FILE: /tmp/release.keystore
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: ./gradlew assembleRelease
 
       - name: Create tag and GitHub release
         if: steps.check_tag.outputs.exists == 'false'
@@ -87,4 +99,4 @@ jobs:
             --title "$TAG" \
             --notes-file /tmp/release_notes.md \
             --target main \
-            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
