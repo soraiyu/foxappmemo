@@ -73,7 +73,10 @@ jobs:
 
       - name: Decode keystore
         if: steps.check_tag.outputs.exists == 'false'
-        run: echo "${{ secrets.SIGNING_KEYSTORE }}" | base64 -d > /tmp/release.keystore
+        run: |
+          umask 077
+          printf '%s' "${{ secrets.SIGNING_KEYSTORE }}" | base64 -d > /tmp/release.keystore
+          chmod 600 /tmp/release.keystore
 
       - name: Build release APK
         if: steps.check_tag.outputs.exists == 'false'
