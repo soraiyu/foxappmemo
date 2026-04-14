@@ -7,12 +7,17 @@ jobs:
   get-hash:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Install apksigner
         run: |
+          set -euo pipefail
           sudo apt update
           sudo apt install -y android-sdk-build-tools
+          APKSIGNER_PATH="$(find /usr/lib/android-sdk/build-tools -type f -name apksigner | sort -V | tail -n 1)"
+          if [ -z "$APKSIGNER_PATH" ]; then
+            echo "apksigner was not found under /usr/lib/android-sdk/build-tools" >&2
+            exit 1
+          fi
+          echo "APKSIGNER_PATH=$APKSIGNER_PATH" >> "$GITHUB_ENV"
 
       - name: Download Release APK
         run: |
@@ -20,5 +25,6 @@ jobs:
 
       - name: Get SHA-256 Digest
         run: |
+          set -euo pipefail
           echo "=== APK Signing Certificate SHA-256 ==="
-          apksigner verify --print-certs app-release.apk | grep -E "SHA-256 digest"
+          "$APKSIGNER_PATH" verify --print-certs app-release.apk | grep -E "SHA-256 digest"
