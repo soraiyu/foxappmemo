@@ -81,10 +81,12 @@ jobs:
 
       - name: Verify release keystore
         if: steps.check_tag.outputs.exists == 'false'
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           keytool -list -v \
             -keystore /tmp/release.keystore \
-            -storepass '${{ secrets.ANDROID_KEYSTORE_PASSWORD }}' >/dev/null
+            -storepass "$KEYSTORE_PASSWORD" >/dev/null
 
       - name: Build release APK
         if: steps.check_tag.outputs.exists == 'false'
