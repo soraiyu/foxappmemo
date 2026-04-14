@@ -84,6 +84,7 @@ jobs:
         env:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
+          set -euo pipefail
           printf '%s\n' "$KEYSTORE_PASSWORD" | keytool -list -v \
             -keystore /tmp/release.keystore
 
