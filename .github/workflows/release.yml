@@ -85,9 +85,10 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           set -euo pipefail
-          keytool -list -v \
+          keytool -list \
             -keystore /tmp/release.keystore \
-            -storepass "$KEYSTORE_PASSWORD"
+            -storepass "$KEYSTORE_PASSWORD" \
+            > /dev/null
 
       - name: Build release APK
         if: steps.check_tag.outputs.exists == 'false'
