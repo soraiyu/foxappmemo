@@ -21,7 +21,8 @@ jobs:
 
       - name: Download Release APK
         run: |
-          wget https://github.com/soraiyu/foxappmemo/releases/download/v1.2.1/app-release.apk -O app-release.apk
+          set -euo pipefail
+          wget "https://github.com/${{ github.repository }}/releases/download/v1.2.1/app-release.apk" -O app-release.apk
 
       - name: Get SHA-256 Digest
         run: |
