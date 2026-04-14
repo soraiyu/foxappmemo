@@ -1,0 +1,24 @@
+name: Get APK Signing Hash
+
+on:
+  workflow_dispatch:   # 手動実行
+
+jobs:
+  get-hash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install apksigner
+        run: |
+          sudo apt update
+          sudo apt install -y android-sdk-build-tools
+
+      - name: Download Release APK
+        run: |
+          wget https://github.com/soraiyu/foxappmemo/releases/download/v1.2.1/app-release.apk -O app-release.apk
+
+      - name: Get SHA-256 Digest
+        run: |
+          echo "=== APK Signing Certificate SHA-256 ==="
+          apksigner verify --print-certs app-release.apk | grep -E "SHA-256 digest"
