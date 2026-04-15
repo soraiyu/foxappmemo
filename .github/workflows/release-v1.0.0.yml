@@ -1,0 +1,64 @@
+name: Release v1.0.0
+
+on:
+  push:
+    branches:
+      - copilot/tag-main-as-v100
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          if git ls-remote --tags origin v1.0.0 | grep -q v1.0.0; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up JDK 17
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        if: steps.check_tag.outputs.exists == 'false'
+        run: chmod +x gradlew
+
+      - name: Build debug APK
+        if: steps.check_tag.outputs.exists == 'false'
+        run: ./gradlew assembleDebug
+
+      - name: Create tag and release
+        if: steps.check_tag.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git tag v1.0.0
+          git push origin v1.0.0
+          gh release create v1.0.0 \
+            --title "v1.0.0" \
+            --notes "First release of FoxAppMemo." \
+            --target main \
+            app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Tag already exists
+        if: steps.check_tag.outputs.exists == 'true'
+        run: echo "Tag v1.0.0 already exists, skipping."
