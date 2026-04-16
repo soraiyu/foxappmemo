@@ -64,6 +64,7 @@ android {
         compose = true
     }
 
+    // Disable dependency metadata to comply with F-Droid's signing block requirements
     dependenciesInfo {
         includeInApk = false
         includeInBundle = false
